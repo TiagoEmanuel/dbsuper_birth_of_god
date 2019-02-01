@@ -1,55 +1,59 @@
-import pygame 
-#seth window
+import pygame
+from pygame import * 
+mixer.init()
+mixer.music.load('music/single.ogg')
+mixer.music.play()
+while mixer.music.get_busy():
+    time.Clock().tick(3)
+    break
 win = pygame.display.set_mode((1000,800))
-pygame.display.set_caption("Test")
-#load images 
+pygame.display.set_caption("Test") 
 walkRight = [pygame.image.load('sprite_sheet/r1.png'), pygame.image.load('sprite_sheet/r2.png'), pygame.image.load('sprite_sheet/r3.png'), pygame.image.load(
-    'sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r5.png'), pygame.image.load('sprite_sheet/r5.png'), pygame.image.load('sprite_sheet/r5.png'), pygame.image.load('sprite_sheet/r5.png'), pygame.image.load('sprite_sheet/r5.png')]
+    'sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r5.png'), pygame.image.load('sprite_sheet/r5.png')]
 walkLeft = [pygame.image.load('sprite_sheet/l1.png'), pygame.image.load('sprite_sheet/l2.png'), pygame.image.load('sprite_sheet/l3.png'), pygame.image.load(
-    'sprite_sheet/l4.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png')]
+    'sprite_sheet/l4.png'), pygame.image.load('sprite_sheet/l4.png'), pygame.image.load('sprite_sheet/l4.png'), pygame.image.load('sprite_sheet/l4.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png'), pygame.image.load('sprite_sheet/l5.png')]
 jump = [pygame.image.load('sprite_sheet/j1.png'), pygame.image.load(
-    'sprite_sheet/j2.png'), pygame.image.load('sprite_sheet/j3.png'), pygame.image.load('sprite_sheet/j4.png'), pygame.image.load('sprite_sheet/j5.png'), pygame.image.load('sprite_sheet/j6.png'), ]
+    'sprite_sheet/j2.png'), pygame.image.load('sprite_sheet/j3.png'), pygame.image.load('sprite_sheet/j4.png'), pygame.image.load('sprite_sheet/j5.png'), pygame.image.load('sprite_sheet/j6.png'),]
 bg = pygame.image.load('sprite_sheet/bk.png')
 char = pygame.image.load('sprite_sheet/stand.png')
-#set clock speed
 clock = pygame.time.Clock()
-#set player attr
-x = 50
-y = 590
-width = 40
-height = 40
-vel = 5
 
-#Pulos
-isJump = False
-jumpCount = 10
-
-left = False
-right = False
-up = False
-WalkCount = 0
+class Player(object):
+    def __init__(self,x,y,width,height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.vel = 15
+        self.isJump = False
+        self.jumpCount = 10
+        self.left = False
+        self.right = False
+        self.up = False
+        self.WalkCount = 0 
 
 def redrawGameWindow():
-    global WalkCount
+    ch.WalkCount
     win.blit(bg, (0,0))
-    #upload player to the screen
-    if WalkCount + 1 >= 27:
-        WalkCount = 0
-    
-    if left:
-        win.blit(walkLeft[WalkCount//3],(x,y))
-        WalkCount += 1 
-    elif right:
-         win.blit(walkRight[WalkCount//3], (x, y))
-         WalkCount += 1 
-    elif up:
-         win.blit(jump[WalkCount//2], (x, y))
-         WalkCount += 1
+    if ch.WalkCount + 1 >= 27:
+        ch.WalkCount = 0
+    if ch.left:
+        win.blit(walkLeft[ch.WalkCount//3],(ch.x,ch.y))
+        ch.WalkCount += 1 
+    elif ch.right:
+         win.blit(walkRight[ch.WalkCount//3], (ch.x,ch.y))
+         ch.WalkCount += 1 
+    elif ch.up:
+         win.blit(jump[ch.WalkCount//2], (ch.x,ch.y))
+         ch.WalkCount += 1
     else:
-        win.blit(char, (x,y))
+        win.blit(char, (ch.x,ch.y))
     pygame.display.update()
-#Main-loop
+
+ch = Player(300,610,64,64)
+
 st = True
+
 while st:
     clock.tick(27)
     for event in pygame.event.get():
@@ -59,39 +63,39 @@ while st:
     keys = pygame.key.get_pressed()
     
     if keys[pygame.K_LEFT]:
-        x -= vel
-        left = True
-        right = False
-        up = False
-    elif keys[pygame.K_RIGHT] and x < 1000 - width - vel:
-        x += vel
-        left = False
-        right = True
-        up = False 
+        ch.x -= ch.vel
+        ch.left = True
+        ch.right = False
+        ch.up = False
+    elif keys[pygame.K_RIGHT] and ch.x < 1000 - ch.width - ch.vel:
+        ch.x += ch.vel
+        ch.left = False
+        ch.right = True
+        ch.up = False 
     else:
-        left = False
-        right = False
-        WalkCount = 0
+        ch.left = False
+        ch.right = False
+        ch.WalkCount = 0
     # Se isJump não é usado?
-    if not (isJump):   
+    if not (ch.isJump):   
         # Então se is Jump não for usado (o que sempre vai acontecer nesse ponto)
         if keys[pygame.K_SPACE]:
         # O booleano fica ativado
-            isJump = True
-            up = True
-            right = False
-            left = False
-            WalkCount = 0
+            ch.isJump = True
+            ch.up = True
+            ch.right = False
+            ch.left = False
+            ch.WalkCount = 0
     else:
-        if jumpCount >= -10:
+        if ch.jumpCount >= -10:
             neg = 1
-            if jumpCount < 0:
+            if ch.jumpCount < 0:
                 neg = -1
-            y -= (jumpCount **2) * 0.5 * neg
-            jumpCount -= 1
+            ch.y -= (ch.jumpCount **2) * 0.5 * neg
+            ch.jumpCount -= 1
         else:
-            isJump = False
-            jumpCount = 10  
+            ch.isJump = False
+            ch.jumpCount = 10  
     redrawGameWindow()
 
 pygame.quit()
