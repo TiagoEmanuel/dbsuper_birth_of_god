@@ -42,36 +42,55 @@ class Player(object):
         self.right = False
         self.up = False
         self.WalkCount = 0 
-
+        self.standing = True
     def draw(self,win):
 
         if self.WalkCount + 1 >= 27:
             self.WalkCount = 0
+        if not (self.standing):  
+           
+            if self.left:
+                win.blit(walkLeft[self.WalkCount//3], (self.x,self.y))
+                self.WalkCount += 1
 
-        if self.left:
-            win.blit(walkLeft[self.WalkCount//3], (self.x,self.y))
-            self.WalkCount += 1
-
-        elif self.right:
-            win.blit(walkRight[self.WalkCount//3], (self.x, self.y))
-            self.WalkCount += 1
+            elif self.right:
+                win.blit(walkRight[self.WalkCount//3], (self.x, self.y))
+                self.WalkCount += 1
 
         elif self.up:
             win.blit(jump[self.WalkCount//2], (self.x, self.y))
             self.WalkCount += 1
 
         else:
-            win.blit(char, (self.x, self.y))
+           # win.blit(char, (self.x, self.y))
+           if self.right:
+                win.blit(walkRight[0], (self.x, self.y))
+           else:
+                win.blit(walkLeft[0], (self.x, self.y))
+
+class Special():
+    def __init__(self,x,y,radius,color,facing):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.color = color
+        self.facing = facing
+    
+    def draw(self,win):
+        pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
+
 
 def redrawGameWindow():
     #global WalkCount
     win.blit(bg, (0, 0))
     ch.draw(win)
+    for bullet in bullets:
+        bullet.draw(win)
     pygame.display.update()
     
 ch = Player(300,610,64,64)
 st = True
-
+bullets = []
 while st:
         clock.tick(27)
 
@@ -79,22 +98,35 @@ while st:
 
             if event.type == pygame.QUIT:
                 st = False
+        for bullet in bullets:
+            if bullet.x < 1000 and bullet.x > 0:
+                bullet.x += ch.vel
+            else:
+                bullets.pop(bullets.index(bullet))
         #summom key move
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            if ch.left:
+                facing = -1
+            else:
+                facing = 1
 
+            if len(bullets) < 5:
+                bullets.append( Special( (ch.x+ch.width // 2),round(ch.y+ch.height//2),6, (0,0,0),facing ) )
         if keys[pygame.K_LEFT] and ch.x > ch.vel:
             ch.x -= ch.vel
             ch.left = True
             ch.right = False
             ch.up = False
-
+            ch.standing = False
         elif keys[pygame.K_RIGHT] and ch.x < 1000 - ch.width - ch.vel:
             ch.x += ch.vel
             ch.left = False
             ch.right = True
             ch.up = False
-
+            ch.standing = False
         else:
+            ch.standing = True
             ch.left = False
             ch.right = False
             ch.WalkCount = 0
@@ -103,7 +135,7 @@ while st:
         if not (ch.isJump):
             # Então se is Jump não for usado (o que sempre vai acontecer nesse ponto)
 
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_UP]:
                 # O booleano fica ativado
                 ch.isJump = True
                 ch.up = True
