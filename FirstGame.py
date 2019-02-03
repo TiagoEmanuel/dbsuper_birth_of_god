@@ -1,5 +1,5 @@
 import pygame
-from pygame import * 
+from pygame import *
 
 mixer.init()
 mixer.music.load('music/single.ogg')
@@ -11,7 +11,7 @@ while mixer.music.get_busy():
 
 win = pygame.display.set_mode((1000,800))
 
-pygame.display.set_caption("DRAGON BALL SUPER: BIRTH OF GOD ALPHA 0.0.2") 
+pygame.display.set_caption("DRAGON BALL SUPER: BIRTH OF GOD ALPHA 0.0.2")
 
 walkRight = [pygame.image.load('sprite_sheet/r1.png'), pygame.image.load('sprite_sheet/r2.png'), pygame.image.load('sprite_sheet/r3.png'), pygame.image.load(
     'sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r4.png'), pygame.image.load('sprite_sheet/r5.png'), pygame.image.load('sprite_sheet/r5.png')]
@@ -29,7 +29,7 @@ char = pygame.image.load('sprite_sheet/stand.png')
 clock = pygame.time.Clock()
 
 class Player(object):
-    
+
     def __init__(self,x,y,width,height):
         self.x = x
         self.y = y
@@ -41,14 +41,14 @@ class Player(object):
         self.left = False
         self.right = False
         self.up = False
-        self.WalkCount = 0 
+        self.WalkCount = 0
         self.standing = True
     def draw(self,win):
 
         if self.WalkCount + 1 >= 27:
             self.WalkCount = 0
-        if not (self.standing):  
-           
+        if not (self.standing):
+
             if self.left:
                 win.blit(walkLeft[self.WalkCount//3], (self.x,self.y))
                 self.WalkCount += 1
@@ -75,20 +75,63 @@ class Special():
         self.radius = radius
         self.color = color
         self.facing = facing
-    
+
     def draw(self,win):
         pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
 
+class Enemies(object):
+    walkLeft = [pygame.image.load('enemies/r1.png'), pygame.image.load('enemies/r2.png'), pygame.image.load('enemies/r3.png'), pygame.image.load('enemies/r4.png'),pygame.image.load('enemies/r4.png'),pygame.image.load('enemies/r4.png')]
+    walkRight =  [pygame.image.load('enemies/l1.png'), pygame.image.load('enemies/l2.png'), pygame.image.load('enemies/l3.png'), pygame.image.load('enemies/l4.png'), pygame.image.load('enemies/l4.png'), pygame.image.load('enemies/l4.png')]
+
+    def __init__(self,x,y,width,height,end):
+
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [self.x, self.end]
+        self.walkCount = 0
+        self.vel = 3
+
+    def draw(self,win):
+        self.move()
+        if self.walkCount + 1 >= 33:
+            self.walkCount = 0
+        if self.vel > 0:
+            win.blit(self.walkRight[self.walkCount //2], (self.x, self.y))
+            self.walkCount += 1
+        else:
+            win.blit(self.walkLeft[self.walkCount//2] ,(self.x,self.y))
+            self.walkCount += 1
+        pass
+
+    def move(self):
+        if self.vel > 0:
+            if self.x < self.path[1] + self.vel:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        else:
+            if self.x - self.vel > self.path[0]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        pass
 
 def redrawGameWindow():
     #global WalkCount
     win.blit(bg, (0, 0))
     ch.draw(win)
+    enemy.draw(win)
     for bullet in bullets:
         bullet.draw(win)
     pygame.display.update()
-    
+
 ch = Player(300,610,64,64)
+enemy = Enemies(100,410,64,64,450)
 st = True
 bullets = []
 while st:
