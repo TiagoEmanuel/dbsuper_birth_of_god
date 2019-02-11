@@ -146,8 +146,14 @@ ch = Player(300,610,64,64)
 enemy = Enemies(100,410,64,64,450)
 st = True
 bullets = []
+shootLoop = 0
 while st:
         clock.tick(27)
+
+        if shootLoop > 0:
+            shootLoop += 1
+        if shootLoop > 3:
+            shootLoop = 0
 
         for event in pygame.event.get():
 
@@ -164,7 +170,7 @@ while st:
                 bullets.pop(bullets.index(bullet))
         #summom key move
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] and shootLoop == 0:
             if ch.left:
                 facing = -1
             else:
@@ -172,6 +178,7 @@ while st:
 
             if len(bullets) < 5:
                 bullets.append( Special( (ch.x+ch.width // 2),round(ch.y+ch.height//2),6, (0,0,0),facing ) )
+                shootLoop = 1
         if keys[pygame.K_LEFT] and ch.x > ch.vel:
             ch.x -= ch.vel
             ch.left = True
