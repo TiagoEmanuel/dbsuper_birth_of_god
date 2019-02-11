@@ -103,15 +103,14 @@ class Enemies(object):
         if self.walkCount + 1 >= 33:
             self.walkCount = 0
             if self.vel > 0:
-                win.blit(self.walkRight[self.walkCount //3], (self.x, self.y))
+                win.blit(self.walkLeft[self.walkCount //9], (self.x, self.y))
                 self.walkCount += 1
         else:
-            if self.walkCount + 1 >=33:
-                win.blit(self.walkLeft[self.walkCount//3] ,(self.x,self.y))
+            if self.vel > 0:
+                win.blit(self.walkRight[self.walkCount //9], (self.x,self.y))
                 self.walkCount += 1
-                if self.vel > 0:
-                    self.hitbox = (self.x, self.y, 28, 60)
-                    pygame.draw.rect(win, (255,0,0), self.hitbox,2)
+            self.hitbox = (self.x, self.y, 28, 60)
+            pygame.draw.rect(win, (255,0,0), self.hitbox,2)
         pass
 
     def move(self):
