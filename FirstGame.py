@@ -43,7 +43,7 @@ class Player(object):
         self.up = False
         self.WalkCount = 0
         self.standing = True
-        self.hitbox = (self.x, self.y, 28, 60)
+        self.hitbox = (self.x + 17, self.y + 11, 100, 100)
     def draw(self,win):
 
         if self.WalkCount + 1 >= 27:
@@ -66,9 +66,10 @@ class Player(object):
            # win.blit(char, (self.x, self.y))
            if self.right:
                 win.blit(walkRight[0], (self.x, self.y))
+
            else:
                 win.blit(walkLeft[0], (self.x, self.y))
-           self.hitbox = (self.x, self.y, 28, 60)
+           self.hitbox = (self.x + 17, self.y + 11, 100, 100)
            pygame.draw.rect(win, (255,0,0), self.hitbox,2)
 
 class Special():
@@ -96,7 +97,7 @@ class Enemies(object):
         self.path = [self.x, self.end]
         self.walkCount = 0
         self.vel = 3
-        self.hitbox = (self.x, self.y, 28, 60)
+        self.hitbox = (self.x + 17, self.y + 2, 100, 100)
 
     def draw(self,win):
         self.move()
@@ -109,7 +110,7 @@ class Enemies(object):
             if self.vel > 0:
                 win.blit(self.walkRight[self.walkCount //9], (self.x,self.y))
                 self.walkCount += 1
-            self.hitbox = (self.x, self.y, 28, 60)
+            self.hitbox = (self.x + 17, self.y + 2, 100, 100)
             pygame.draw.rect(win, (255,0,0), self.hitbox,2)
         pass
 
@@ -126,6 +127,10 @@ class Enemies(object):
             else:
                 self.vel = self.vel * -1
                 self.walkCount = 0
+        pass
+
+    def hit(self):
+        print("Hit!")
         pass
 
 def redrawGameWindow():
@@ -149,6 +154,10 @@ while st:
             if event.type == pygame.QUIT:
                 st = False
         for bullet in bullets:
+            if bullet.y - bullet.radius < enemy.hitbox[1] + enemy.hitbox[3] and bullet.y+ bullet.radius > enemy.hitbox[1]:
+                if bullet.x + bullet.radius > enemy.hitbox[0] and bullet.x - bullet.radius < enemy.hitbox[0] + enemy.hitbox[2]:
+                    enemy.hit()
+                    bullets.pop(bullets.index(bullet))
             if bullet.x < 1000 and bullet.x > 0:
                 bullet.x += ch.vel
             else:
